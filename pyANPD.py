@@ -10,7 +10,7 @@ def validate_contour(contour, img, aspect_ratio_range, area_range):
     rect = cv2.minAreaRect(contour)
     img_width = img.shape[1]
     img_height = img.shape[0]
-    box = cv2.boxPoints(rect) 
+    box = cv2.cv.BoxPoints(rect) 
     box = np.int0(box)
 
     X = rect[0][0]
@@ -69,14 +69,18 @@ def process_image(name, debug, **options):
 
 	gray = cv2.cvtColor(input_image, cv2.COLOR_BGR2GRAY)
 	gray = enhance(gray)
+	#cv2.imshow("gray", gray)
 	gray = cv2.GaussianBlur(gray, (5,5), 0)
+	#cv2.imshow("GaussianBlur", gray)
 	gray = cv2.Sobel(gray, -1, 1, 0)
+	#cv2.imshow("Sobel", gray)
 	h,sobel = cv2.threshold(gray,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
 	se = cv2.getStructuringElement(cv2.MORPH_RECT, se_shape)
 	gray = cv2.morphologyEx(sobel, cv2.MORPH_CLOSE, se)
+	#cv2.imshow("morphologyEx", gray)
 	ed_img = np.copy(gray)
-
-	_,contours,_=cv2.findContours(gray, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+	#cv2.waitKey(0)
+	contours,_=cv2.findContours(gray, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
 	font = cv2.FONT_HERSHEY_SIMPLEX
 
@@ -94,7 +98,7 @@ def process_image(name, debug, **options):
 
 		if validate_contour(contour, gray, aspect_ratio_range, area_range):
 			rect = cv2.minAreaRect(contour)  
-			box = cv2.boxPoints(rect) 
+			box =  cv2.cv.BoxPoints(rect)
 			box = np.int0(box)  
 			Xs = [i[0] for i in box]
 			Ys = [i[1] for i in box]
